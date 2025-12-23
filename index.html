@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foto dengan Cerita - Background Video</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: white;
+            position: relative;
+        }
+        
+        /* Background video */
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
+        }
+        
+        /* Container utama */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        header {
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+        }
+        
+        .title {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        /* Konten utama */
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        /* Foto */
+        .photo-container {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.5s ease;
+        }
+        
+        .photo-container:hover {
+            transform: scale(1.02);
+        }
+        
+        .photo {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Container teks dengan efek glassmorphism */
+        .story-container {
+            flex: 1;
+            min-width: 300px;
+            max-width: 600px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .story-container:hover {
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+        
+        .story-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffcc70;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        
+        .story-text {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            text-align: justify;
+            margin-bottom: 20px;
+        }
+        
+        .story-text p {
+            margin-bottom: 15px;
+        }
+        
+        /* Kontrol audio minimalis */
+        .audio-controls-minimal {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 100;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            min-width: auto;
+        }
+        
+        .audio-controls-minimal:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        /* Mode tersembunyi untuk kontrol audio */
+        .audio-controls-hidden {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            justify-content: center;
+        }
+        
+        .audio-controls-hidden .audio-info,
+        .audio-controls-hidden .volume-slider {
+            display: none;
+        }
+        
+        .audio-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            max-width: 0;
+            overflow: hidden;
+            transition: max-width 0.3s ease;
+        }
+        
+        .audio-controls-minimal:hover .audio-info {
+            max-width: 150px;
+        }
+        
+        .song-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .song-artist {
+            font-size: 0.7rem;
+            opacity: 0.8;
+            white-space: nowrap;
+        }
+        
+        .audio-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .audio-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        
+        .volume-slider {
+            width: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
+            accent-color: #ffcc70;
+        }
+        
+        .audio-controls-minimal:hover .volume-slider {
+            width: 80px;
+            opacity: 1;
+        }
+        
+        /* Indikator audio aktif */
+        .audio-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 99;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            animation: fadeInOut 3s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
+        }
+        
+        .audio-indicator i {
+            color: #4CAF50;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            width: 100%;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Responsif */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 2.2rem;
+            }
+            
+            .main-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .photo-container, .story-container {
+                max-width: 100%;
+            }
+            
+            .audio-controls-minimal {
+                bottom: 10px;
+                right: 10px;
+                left: auto;
+            }
+            
+            .audio-controls-minimal:hover {
+                width: auto;
+                min-width: 200px;
+            }
+            
+            .audio-controls-minimal:hover .audio-info {
+                max-width: 100px;
+            }
+            
+            .audio-controls-minimal:hover .volume-slider {
+                width: 60px;
+            }
+        }
+        
+        /* Animasi */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease forwards;
+        }
+        
+        /* Efek dekoratif */
+        .floating-element {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 204, 112, 0.1) 0%, rgba(255, 204, 112, 0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+        }
+        
+        .floating-element:nth-child(1) {
+            top: 10%;
+            left: 5%;
+        }
+        
+        .floating-element:nth-child(2) {
+            bottom: 10%;
+            right: 5%;
+        }
+    </style>
+</head>
+<body>
+    <!-- MUSIK AUTO PLAY -->
+    <audio id="background-audio" autoplay loop>
+        <source src="bg.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        window.addEventListener('load', function() {
+            const audio = document.getElementById('background-audio');
+            audio.volume = 0.5;
+            audio.play().catch(() => {
+                document.addEventListener('click', function() {
+                    audio.play();
+                }, { once: true });
+            });
+        });
+    </script>
+
+    <!-- Background video -->
+    <video id="background-video" autoplay muted loop>
+        <source src="Background.mp4" type="video/mp4">
+        Browser Anda tidak mendukung tag video.
+    </video>
+    <div class="video-overlay"></div>
+    
+    <!-- Efek dekoratif -->
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    
+    <!-- Container utama -->
+    <div class="container">
+        <header class="fade-in">
+            <h1 class="title">Akademi Militer</h1>
+            <p class="subtitle">Sebuah cerita tentang Akmil</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- Foto -->
+            <div class="photo-container fade-in">
+                <img src="akmil.png" alt="akademi militer" class="photo">
+            </div>
+            
+            <!-- Teks cerita dengan efek glass -->
+            <div class="story-container fade-in">
+                <h2 class="story-title">Akademi Militer Magelang</h2>
+                <div class="story-text">
+                    <p>Akademi Militer (Akmil) adalah tempat pendidikan bagi calon perwira TNI AD di Magelang, Jawa Tengah, yang membentuk karakter, kepemimpinan, dan kemampuan fisik melalui pelatihan akademik ketat berdasarkan falsafah Jawa dan kurikulum militer modern, melahirkan lulusan bergelar Sarjana Terapan Pertahanan (S.Tr.Han) dengan pangkat Letnan Dua. Sejarahnya bermula dari Militaire Academie di Yogyakarta (1945) lalu menjadi Akademi Militer Nasional (AMN) di Magelang (1957), hingga menjadi bagian dari Akademi TNI (Akmil, AAL, AAU) setelah pemisahan Polri. .</p>
+                    
+                    <p>Sejarah Singkat
+Awal (1945): Militaire Academie (MA) didirikan di Yogyakarta oleh Letnan Jenderal Oerip Soemohardjo.
+Perkembangan (1950-an): MA Yogyakarta sempat ditutup, pendidikan perwira darurat di berbagai kota.
+Peresmian (1957): Akademi Militer Nasional (AMN) diresmikan di Magelang oleh Presiden Soekarno.
+Integrasi (1965): AMN diintegrasikan dengan ATEKAD (Bandung) menjadi Akademi Angkatan Bersenjata Republik Indonesia (Akabri).
+Perubahan Nama (1984): Akabri Bagian Darat menjadi Akademi Militer (Akmil).
+Reformasi (1999): Polri terpisah, Akabri berubah menjadi Akademi TNI (Akmil, AAL, AAU). </p>
+                    
+                    <p>Pendidikan dan Kurikulum
+Lokasi: Mako Akmil di Magelang, kaki Gunung Tidar.
+Fokus: Pendidikan terpadu antara akademik (ilmu pengetahuan), fisik (kesamaptaan), dan kepemimpinan.
+Dasar Kepemimpinan: Berpedoman pada 11 asas kepemimpinan TNI (contoh: Ing ngarsa sung tulada, Tut wuri handayani) dan nilai-nilai Sapta Marga.
+Model: Kurikulum banyak mengadopsi model akademi militer Amerika Serikat di West Point. </p>
+                    
+                    <p>Lulusan Akmil
+Gelar: Menyandang gelar Sarjana Terapan Pertahanan (S.Tr.Han).
+Pangkat: Diangkat menjadi perwira TNI AD berpangkat Letnan Dua (Letda).
+Kualifikasi: Memiliki kompetensi dasar jabatan setingkat komandan peleton. </p>
+                    
+                    <p>Cerita dan Simbol
+Kawah Candradimuka: Akmil sering disebut "kawah candradimuka" karena tempat menempa calon perwira menjadi pemimpin tangguh.
+Saksi Sejarah: Menjadi tempat "kelahiran" banyak tokoh militer dan pejabat tinggi Indonesia, serta lokasi penting seperti retreat kabinet. </p>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="fade-in">
+            <p>© 2025<i class="fas " style="color: #ff7e5f;"></i> @Abang</p>
+        </footer>
+    </div>
+    
+    <!-- Kontrol audio minimalis -->
+    <div class="audio-controls-minimal audio-controls-hidden" id="audio-controls">
+        <div class="audio-info">
+            <div class="song-title">Sampai Akhir Waktu Nanti</div>
+            <div class="song-artist">Yovie & Nuno</div>
+        </div>
+        <button id="play-pause-btn" class="audio-btn">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+    </div>
+    
+    <!-- Audio -->
+    <audio id="background-audio" loop>
+        <source src="bg.mp3" type="audio/mpeg">
+        Browser Anda tidak mendukung elemen audio.
+    </audio>
+    
+    <script>
+        // Elemen audio dan video
+
+        const backgroundAudio = document.getElementById('background-audio');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        const audioControls = document.getElementById('audio-controls');
+        const playIcon = playPauseBtn.querySelector('i');
+        
+        // Inisialisasi volume
+        backgroundAudio.volume = volumeSlider.value;
+        
+        // Fungsi untuk menampilkan indikator audio
+        function showAudioIndicator(message) {
+            // Hapus indikator sebelumnya jika ada
+            const existingIndicator = document.querySelector('.audio-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+            
+            // Buat indikator baru
+            const indicator = document.createElement('div');
+            indicator.className = 'audio-indicator';
+            indicator.innerHTML = `<i class="fas fa-volume-up"></i> <span>${message}</span>`;
+            
+            document.body.appendChild(indicator);
+            
+            // Hapus indikator setelah animasi selesai
+            setTimeout(() => {
+                indicator.remove();
+            }, 3000);
+        }
+        
+        // Fungsi untuk mengatur auto play dengan strategi terbaik
+        async function setupAutoPlay() {
+            try {
+                // Coba play audio secara langsung
+                await backgroundAudio.play();
+                
+                // Jika berhasil, unmute video
+                backgroundVideo.muted = false;
+                
+                // Update ikon tombol
+                playIcon.classList.remove('fa-volume-up', 'fa-volume-mute');
+                playIcon.classList.add('fa-volume-up');
+                
+                // Tampilkan indikator
+                showAudioIndicator('Musik dimulai otomatis');
+                
+                console.log("Auto play berhasil!");
+                return true;
+            } catch (error) {
+                console.log("Auto play diblokir, mencoba strategi lain...");
+                
+                // Strategi 1: Tunggu interaksi pengguna
+                const playOnInteraction = () => {
+                    backgroundAudio.play().then(() => {
+                        backgroundVideo.muted = false;
+                        playIcon.classList.remove('fa-volume-up', 'fa-volume-mute');
+                        playIcon.classList.add('fa-volume-up');
+                        showAudioIndicator('Musik dimulai setelah interaksi');
+                        
+                        // Hapus event listeners setelah berhasil
+                        document.removeEventListener('click', playOnInteraction);
+                        document.removeEventListener('touchstart', playOnInteraction);
+                        document.removeEventListener('keydown', playOnInteraction);
+                    });
+                };
+                
+                // Tambahkan event listeners untuk interaksi
+                document.addEventListener('click', playOnInteraction);
+                document.addEventListener('touchstart', playOnInteraction);
+                document.addEventListener('keydown', playOnInteraction);
+                
+                // Tampilkan indikator untuk interaksi
+                showAudioIndicator('Klik/tap di mana saja untuk memulai musik');
+                
+                return false;
+            }
+        }
+        
+        // Fungsi toggle play/pause
+        function togglePlayPause() {
+            if (backgroundAudio.paused) {
+                backgroundAudio.play();
+                playIcon.classList.remove('fa-volume-mute');
+                playIcon.classList.add('fa-volume-up');
+                showAudioIndicator('Musik dilanjutkan');
+            } else {
+                backgroundAudio.pause();
+                playIcon.classList.remove('fa-volume-up');
+                playIcon.classList.add('fa-volume-mute');
+                showAudioIndicator('Musik dijeda');
+            }
+        }
+        
+        // Fungsi toggle mute/unmute
+        function toggleMute() {
+            backgroundAudio.muted = !backgroundAudio.muted;
+            if (backgroundAudio.muted) {
+                playIcon.classList.remove('fa-volume-up');
+                playIcon.classList.add('fa-volume-mute');
+                showAudioIndicator('Musik dimatikan');
+            } else {
+                playIcon.classList.remove('fa-volume-mute');
+                playIcon.classList.add('fa-volume-up');
+                showAudioIndicator('Musik dinyalakan');
+            }
+        }
+        
+        // Event listener untuk tombol audio
+        playPauseBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMute();
+        });
+        
+        // Event listener untuk slider volume
+        volumeSlider.addEventListener('input', function() {
+            backgroundAudio.volume = this.value;
+            backgroundAudio.muted = false;
+            playIcon.classList.remove('fa-volume-mute');
+            playIcon.classList.add('fa-volume-up');
+        });
+        
+        // Event listener untuk klik di luar kontrol audio
+        document.addEventListener('click', function() {
+            // Jika kontrol dalam mode minimal, kembalikan ke mode tersembunyi
+            if (!audioControls.classList.contains('audio-controls-hidden')) {
+                audioControls.classList.add('audio-controls-hidden');
+            }
+        });
+        
+        // Event listener untuk hover pada kontrol audio
+        audioControls.addEventListener('mouseenter', function() {
+            this.classList.remove('audio-controls-hidden');
+        });
+        
+        audioControls.addEventListener('mouseleave', function() {
+            // Tunggu sebentar sebelum menyembunyikan untuk memungkinkan interaksi dengan slider
+            setTimeout(() => {
+                if (!this.matches(':hover')) {
+                    this.classList.add('audio-controls-hidden');
+                }
+            }, 500);
+        });
+        
+        // Event listener untuk klik pada kontrol audio (cegah penyembunyian)
+        audioControls.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Setup auto play saat halaman dimuat
+        window.addEventListener('load', function() {
+            // Tunggu sebentar untuk memastikan semua resource dimuat
+            setTimeout(() => {
+                setupAutoPlay();
+            }, 500);
+        });
+        
+        // Efek scroll fade-in
+        const fadeElements = document.querySelectorAll('.fade-in');
+        
+        const fadeInOnScroll = () => {
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    element.style.opacity = 1;
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        // Set opacity awal untuk elemen fade-in
+        fadeElements.forEach(element => {
+            element.style.opacity = 0;
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        });
+        
+        // Panggil saat scroll dan saat pertama kali dimuat
+        window.addEventListener('scroll', fadeInOnScroll);
+        window.addEventListener('load', fadeInOnScroll);
+    </script>
+</body>
+</html>
