@@ -2,26 +2,24 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foto dengan Cerita - Background Video</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="akmil" content="width=device-width, initial-scale=1.0">
+    <title>Foto dengan Cerita</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
             min-height: 100vh;
-            overflow-x: hidden;
             color: white;
+            font-family: Arial, sans-serif;
             position: relative;
         }
         
         /* Background video */
-        #background-video {
+        .bg-video {
             position: fixed;
             top: 0;
             left: 0;
@@ -31,7 +29,7 @@
             z-index: -2;
         }
         
-        .video-overlay {
+        .overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -41,329 +39,76 @@
             z-index: -1;
         }
         
-        /* Container utama */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            min-height: 100vh;
-        }
-        
-        /* Header */
-        header {
-            text-align: center;
-            padding: 20px 0;
-            width: 100%;
-        }
-        
-        .title {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-            background: linear-gradient(90deg, #ff7e5f, #feb47b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            font-weight: 300;
-        }
-        
-        /* Konten utama */
-        .main-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-            width: 100%;
-        }
-        
-        /* Foto */
-        .photo-container {
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
+        /* Container glass */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.5s ease;
-        }
-        
-        .photo-container:hover {
-            transform: scale(1.02);
+            padding: 30px;
+            margin: 50px auto;
+            max-width: 800px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
         .photo {
             width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        /* Container teks dengan efek glassmorphism */
-        .story-container {
-            flex: 1;
-            min-width: 300px;
-            max-width: 600px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
-        }
-        
-        .story-container:hover {
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-        }
-        
-        .story-title {
-            font-size: 1.8rem;
+            border-radius: 10px;
             margin-bottom: 20px;
-            color: #ffcc70;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 10px;
         }
         
-        .story-text {
+        .story {
             line-height: 1.8;
-            font-size: 1.1rem;
-            text-align: justify;
-            margin-bottom: 20px;
-        }
-        
-        .story-text p {
-            margin-bottom: 15px;
-        }
-        
-        /* Kontrol audio minimalis */
-        .audio-controls-minimal {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 100;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            transition: all 0.3s ease;
-            min-width: auto;
-        }
-        
-        .audio-controls-minimal:hover {
-            background: rgba(0, 0, 0, 0.8);
-        }
-        
-        /* Mode tersembunyi untuk kontrol audio */
-        .audio-controls-hidden {
-            width: 50px;
-            height: 50px;
-            padding: 0;
-            justify-content: center;
-        }
-        
-        .audio-controls-hidden .audio-info,
-        .audio-controls-hidden .volume-slider {
-            display: none;
-        }
-        
-        .audio-info {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            max-width: 0;
-            overflow: hidden;
-            transition: max-width 0.3s ease;
-        }
-        
-        .audio-controls-minimal:hover .audio-info {
-            max-width: 150px;
-        }
-        
-        .song-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        
-        .song-artist {
-            font-size: 0.7rem;
-            opacity: 0.8;
-            white-space: nowrap;
-        }
-        
-        .audio-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-        
-        .audio-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-        
-        .volume-slider {
-            width: 0;
-            opacity: 0;
-            transition: all 0.3s ease;
-            accent-color: #ffcc70;
-        }
-        
-        .audio-controls-minimal:hover .volume-slider {
-            width: 80px;
-            opacity: 1;
-        }
-        
-        /* Indikator audio aktif */
-        .audio-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 99;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-            animation: fadeInOut 3s ease-in-out;
-        }
-        
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateY(-10px); }
-            20% { opacity: 1; transform: translateY(0); }
-            80% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-10px); }
-        }
-        
-        .audio-indicator i {
-            color: #4CAF50;
-        }
-        
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            margin-top: 30px;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            width: 100%;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        /* Responsif */
-        @media (max-width: 768px) {
-            .title {
-                font-size: 2.2rem;
-            }
-            
-            .main-content {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .photo-container, .story-container {
-                max-width: 100%;
-            }
-            
-            .audio-controls-minimal {
-                bottom: 10px;
-                right: 10px;
-                left: auto;
-            }
-            
-            .audio-controls-minimal:hover {
-                width: auto;
-                min-width: 200px;
-            }
-            
-            .audio-controls-minimal:hover .audio-info {
-                max-width: 100px;
-            }
-            
-            .audio-controls-minimal:hover .volume-slider {
-                width: 60px;
-            }
-        }
-        
-        /* Animasi */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 1s ease forwards;
-        }
-        
-        /* Efek dekoratif */
-        .floating-element {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 204, 112, 0.1) 0%, rgba(255, 204, 112, 0) 70%);
-            border-radius: 50%;
-            z-index: -1;
-        }
-        
-        .floating-element:nth-child(1) {
-            top: 10%;
-            left: 5%;
-        }
-        
-        .floating-element:nth-child(2) {
-            bottom: 10%;
-            right: 5%;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
     <!-- MUSIK AUTO PLAY -->
     <audio id="background-audio" autoplay loop>
-        <source src="bg.mp3" type="audio/mpeg">
+        <source src=bg.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- Background video -->
+    <video class="bg-video" autoplay muted loop>
+        <source src="background.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <!-- Container konten -->
+    <div class="glass-container">
+        <img src="akmil.png" alt="Pantai" class="photo">
+        
+        <div class="story">
+            <h2>Akademi Militer</h2>
+            <p>Senja itu datang dengan pelan, menyapu langit dengan warna jingga, merah, dan ungu. Ombak yang menggulung lembut ke tepian seolah membisikkan cerita-cerita lama tentang laut dan para pelayar.</p>
+            <p>Aku duduk di atas pasir yang masih menyimpan kehangatan matahari, merasakan butiran halusnya di antara jari-jariku. Angin laut berhembus lembut, membelai rambut dan membawa aroma khas air asin yang menenangkan.</p>
+            <p>Di kejauhan, burung-burung camar melayang dengan anggunnya, sesekali menyambar ikan kecil yang muncul di permukaan. Suara deburan ombak menjadi musik alam yang paling indah.</p>
+        </div>
+    </div>
+
     <script>
+        // Auto play musik
         window.addEventListener('load', function() {
             const audio = document.getElementById('background-audio');
-            audio.volume = 0.5;
-            audio.play().catch(() => {
-                document.addEventListener('click', function() {
-                    audio.play();
-                }, { once: true });
-            });
+            audio.volume = 0.3;
+            
+            // Coba play otomatis
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    // Jika gagal, tunggu klik user
+                    document.addEventListener('click', function startAudio() {
+                        audio.play();
+                        document.removeEventListener('click', startAudio);
+                    }, { once: true });
+                });
+            }
         });
     </script>
-
-    <!-- Background video -->
-    <video id="background-video" autoplay muted loop>
-        <source src="Background.mp4" type="video/mp4">
-        Browser Anda tidak mendukung tag video.
+</body>
+    </html>deo.
     </video>
     <div class="video-overlay"></div>
     
